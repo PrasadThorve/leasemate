@@ -18,6 +18,7 @@ class ChatTurn:
     thread_id: str
     reply: str
     tools_used: list[str]
+    guardrail: str | None
 
 
 class AgentService:
@@ -64,8 +65,17 @@ class AgentService:
 
         messages = result["messages"]
         last_question = max(i for i, m in enumerate(messages) if isinstance(m, HumanMessage))
-        tools_used = [m.name for m in messages[last_question:] if isinstance(m, ToolMessage)]
-        return ChatTurn(thread_id=thread_id, reply=messages[-1].text, tools_used=tools_used)
+        tools_used = [
+            m.name
+            for m in messages[last_question:]
+            if isinstance(m, ToolMessage) and m.status != "error"  # don't show failed tools as done
+        ]
+        return ChatTurn(
+            thread_id=thread_id,
+            reply=messages[-1].text,
+            tools_used=tools_used,
+            guardrail=result.get("guardrail"),
+        )
 
     async def history(self, company_id: int, thread_id: str) -> list[tuple[str, str]]:
         """The visible conversation so far: (role, text) pairs, without tool calls."""

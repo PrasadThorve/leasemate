@@ -20,6 +20,10 @@ class Settings(BaseSettings):
     # For reasoning models (like gpt-5-mini): "low" keeps replies fast enough for chat.
     # Leave it empty in .env if you switch to a model that doesn't support it.
     openai_reasoning_effort: str | None = "low"
+    
+    # Model for the guardrail classifier. Empty = same as OPENAI_MODEL. A smaller,
+    # cheaper model works well here because classifying is an easy task.
+    guard_model: str | None = None
 
     mcp_server_url: str = "http://127.0.0.1:8001/mcp"
     default_company_id: int = 1
@@ -31,7 +35,7 @@ class Settings(BaseSettings):
     # the key to a company, so the browser never sends a company id directly.
     widget_keys: dict[str, int] = {"sahyadri-demo-key": 1, "indrayani-demo-key": 2}
 
-    @field_validator("openai_reasoning_effort", mode="before")
+    @field_validator("openai_reasoning_effort", "guard_model", mode="before")
     @classmethod
     def empty_means_none(cls, value: str | None) -> str | None:
         return value or None

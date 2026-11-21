@@ -104,3 +104,10 @@ class TourConfirmation(BaseModel):
     leasing_office_phone: str
     rescheduled_from: str | None  # set when an earlier visit was moved to this time
     message: str
+    
+
+class HandoffResult(BaseModel):
+    handoff_id: int
+    status: str
+    contact_phone: str  # leasing office number to share with the prospect
+    message: str

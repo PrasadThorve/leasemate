@@ -137,3 +137,22 @@ class Tour(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
 
     guest_card: Mapped[GuestCard] = relationship(back_populates="tours")
+    
+    
+
+
+class Handoff(Base):
+    """A conversation the AI passed to the human leasing team (negotiation, complaint, etc.)."""
+
+    __tablename__ = "handoffs"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    company_id: Mapped[int] = mapped_column(ForeignKey("companies.id"), index=True)
+    property_id: Mapped[int | None] = mapped_column(ForeignKey("properties.id"), nullable=True)
+    guest_card_id: Mapped[int | None] = mapped_column(ForeignKey("guest_cards.id"), nullable=True)
+
+    # negotiation | complaint | resident_issue | human_requested | other
+    reason: Mapped[str] = mapped_column(String(30))
+    summary: Mapped[str] = mapped_column(Text)  # written by the agent for the leasing team
+    status: Mapped[str] = mapped_column(String(20), default="open")  # open | resolved
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)

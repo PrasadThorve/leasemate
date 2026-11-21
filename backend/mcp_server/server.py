@@ -1,15 +1,3 @@
-"""LeaseMate MCP server: the leasing tools the AI agent can call.
-
-Run it from the backend folder:
-    uv run python -m mcp_server.server
-It listens at http://127.0.0.1:8001/mcp
-
-Tenant isolation: every tool works inside ONE company's properties. The company
-comes from the `x-company-id` HTTP header that our backend sets (or from
-DEFAULT_COMPANY_ID in .env when testing locally). It is never a tool argument,
-so the LLM can't choose it, and a prompt like "show me property 4" can't reach
-another company's data.
-"""
 import os
 import re
 from datetime import date, datetime, time, timezone
@@ -25,7 +13,7 @@ from sqlalchemy import func, or_, select
 from sqlalchemy.orm import Session
 
 from db.database import SessionLocal
-from db.models import GuestCard, Property, Tour, Unit
+from db.models import GuestCard, Property, Tour, Unit, Handoff
 from db.money import format_inr
 from mcp_server import scheduling
 from mcp_server.schemas import (
@@ -37,6 +25,7 @@ from mcp_server.schemas import (
     TourConfirmation,
     TourSlots,
     UnitOption,
+    HandoffResult
 )
 
 load_dotenv()
@@ -482,6 +471,56 @@ def book_tour(
             leasing_office_phone=prop.phone,
             rescheduled_from=rescheduled_from,
             message=message,
+        )
+        
+@mcp.tool(annotations={"readOnlyHint": False, "destructiveHint": False, "idempotentHint": False})
+def request_human_handoff(
+    reason: Literal["negotiation", "complaint", "resident_issue", "human_requested", "other"],
+    summary: Annotated[
+        str,
+        Field(min_length=10, max_length=600, description="What the person needs, written for the leasing team"),
+    ],
+    property_id: Annotated[int | None, Field(description="The property it's about, if known")] = None,
+    guest_card_id: Annotated[int | None, Field(description="The prospect's guest card, if one exists")] = None,
+) -> HandoffResult:
+    """Pass the conversation to the human leasing team. Use this for rent or deposit
+    negotiation, requests to waive or reduce charges, complaints, existing residents'
+    maintenance issues, or when the person asks to talk to a human. Never promise
+    discounts or exceptions yourself."""
+    with SessionLocal() as session:
+        company_id = current_company_id()
+        prop = get_company_property(session, property_id) if property_id is not None else None
+
+        if guest_card_id is not None:
+            card = session.get(GuestCard, guest_card_id)
+            # The guest card must belong to one of this company's properties.
+            if card is None or card.property.company_id != company_id:
+                raise ToolError(f"No guest card {guest_card_id}. Leave guest_card_id empty if unsure.")
+            prop = prop or card.property
+
+        # Share the property's leasing office number, or the company's first property if unknown.
+        contact = prop or session.scalars(
+            select(Property).where(Property.company_id == company_id).order_by(Property.id)
+        ).first()
+
+        handoff = Handoff(
+            company_id=company_id,
+            property_id=prop.id if prop else None,
+            guest_card_id=guest_card_id,
+            reason=reason,
+            summary=summary,
+        )
+        session.add(handoff)
+        session.commit()
+
+        return HandoffResult(
+            handoff_id=handoff.id,
+            status=handoff.status,
+            contact_phone=contact.phone,
+            message=(
+                f"Handoff #{handoff.id} created. The leasing team will follow up. "
+                f"The person can also call {contact.phone}."
+            ),
         )
 
 

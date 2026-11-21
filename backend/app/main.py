@@ -60,8 +60,21 @@ async def chat(body: ChatRequest, company_id: CompanyId, service: Service) -> Ch
             status.HTTP_502_BAD_GATEWAY,
             "The AI model didn't respond. Please try again.",
         ) from error
+        
+    except Exception as error:
+        # Any other bug: log the full error for us, show a safe message to the user.
+        # Raising HTTPException here (instead of letting the error escape) keeps the
+        # CORS headers on the response, so the browser shows this message rather than
+        # a misleading "CORS error / can't reach the API".
+        logger.exception("Unexpected error in /chat")
+        raise HTTPException(
+            status.HTTP_500_INTERNAL_SERVER_ERROR,
+            "Something went wrong on our side. Please try again.",
+        ) from error
 
-    return ChatResponse(thread_id=turn.thread_id, reply=turn.reply, tools_used=turn.tools_used)
+    return ChatResponse(
+        thread_id=turn.thread_id, reply=turn.reply, tools_used=turn.tools_used, guardrail=turn.guardrail
+    )
 
 
 @app.get("/chat/{thread_id}", response_model=HistoryResponse)

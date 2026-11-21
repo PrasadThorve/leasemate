@@ -72,7 +72,7 @@ export function useChat(widgetKey: string) {
         saveThreadId(widgetKey, response.thread_id)
         setMessages((prev) => [
           ...prev,
-          { id: crypto.randomUUID(), role: 'assistant', content: response.reply, toolsUsed: response.tools_used },
+          { id: crypto.randomUUID(), role: 'assistant', content: response.reply, toolsUsed: response.tools_used, guardrail: response.guardrail, },
         ])
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Something went wrong. Please try again.')

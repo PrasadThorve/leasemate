@@ -19,6 +19,9 @@ class ChatResponse(BaseModel):
     thread_id: str
     reply: str
     tools_used: list[str]
+    guardrail: str | None = Field(
+        default=None, description='Set when a guardrail acted: "handoff", "fair_housing" or "prompt_injection"'
+    )
 
 
 class HistoryMessage(BaseModel):

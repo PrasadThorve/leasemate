@@ -6,6 +6,7 @@ export interface ChatMessage {
   role: Role
   content: string
   toolsUsed?: string[]
+  guardrail?: Guardrail | null
 }
 
 /** POST /chat response. */
@@ -13,6 +14,7 @@ export interface ChatResponse {
   thread_id: string
   reply: string
   tools_used: string[]
+  guardrail: Guardrail | null
 }
 
 /** GET /chat/{thread_id} response. */
@@ -27,3 +29,6 @@ export interface Company {
   widgetKey: string
   areas: string
 }
+
+/** Which guardrail acted on a turn (matches the backend's guardrail field). */
+export type Guardrail = 'handoff' | 'fair_housing' | 'prompt_injection'

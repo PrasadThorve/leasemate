@@ -1,4 +1,4 @@
-import type { Company } from './types'
+import type { Company, Guardrail } from './types'
 
 // Set VITE_API_URL in frontend/.env to point at a different backend.
 export const API_URL: string = import.meta.env.VITE_API_URL ?? 'http://127.0.0.1:8000'
@@ -25,4 +25,12 @@ export const TOOL_LABELS: Record<string, string> = {
   create_guest_card: 'Saved your details',
   get_tour_slots: 'Checked visit times',
   book_tour: 'Booked a site visit',
+  request_human_handoff: 'Handed over to the leasing team',
+}
+
+// Shown under a reply when a guardrail acted on that message.
+export const GUARDRAIL_LABELS: Record<Guardrail, string> = {
+  fair_housing: 'Fair housing guardrail applied',
+  prompt_injection: 'Unsafe request blocked',
+  handoff: 'Flagged for the leasing team',
 }

@@ -1,5 +1,5 @@
 import { Fragment } from 'react'
-import { TOOL_LABELS } from '../config'
+import { TOOL_LABELS, GUARDRAIL_LABELS } from '../config'
 import type { ChatMessage } from '../types'
 
 /** Renders **bold** text inside one line. */
@@ -67,6 +67,14 @@ function CheckIcon() {
   )
 }
 
+function ShieldIcon() {
+  return (
+    <svg className="shield-icon" viewBox="0 0 16 16" aria-hidden="true">
+      <path d="M8 1.2 2.5 3.3v4.1c0 3.3 2.3 6.2 5.5 7.4 3.2-1.2 5.5-4.1 5.5-7.4V3.3L8 1.2Z" />
+    </svg>
+  )
+}
+
 export function MessageBubble({ message }: { message: ChatMessage }) {
   const isUser = message.role === 'user'
   const tools = [...new Set(message.toolsUsed ?? [])]
@@ -79,9 +87,15 @@ export function MessageBubble({ message }: { message: ChatMessage }) {
           {isUser ? <p>{message.content}</p> : <FormattedText text={message.content} />}
         </div>
 
-        {/* An activity log of the tools the agent used, so you can see it checked real data. */}
-        {tools.length > 0 && (
+        {/* An activity log: guardrails that acted, and the tools the agent used. */}
+        {(message.guardrail || tools.length > 0) && (
           <ul className="activity" aria-label="What the assistant did">
+            {message.guardrail && (
+              <li className="activity-guardrail">
+                <ShieldIcon />
+                {GUARDRAIL_LABELS[message.guardrail]}
+              </li>
+            )}
             {tools.map((tool) => (
               <li key={tool}>
                 <CheckIcon />

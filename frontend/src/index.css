@@ -404,6 +404,18 @@ button:disabled {
   stroke: #fff;
 }
 
+.activity-guardrail {
+  color: var(--burgundy);
+  font-weight: 600;
+}
+
+.shield-icon {
+  flex-shrink: 0;
+  width: 14px;
+  height: 14px;
+  fill: var(--burgundy);
+}
+
 /* Typing indicator: three bouncing orange dots */
 .typing {
   display: flex;
