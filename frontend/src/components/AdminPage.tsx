@@ -4,7 +4,7 @@ import { COMPANIES, HANDOFF_REASONS, STATUS_LABELS } from '../config'
 import type { ActivityResponse } from '../types'
 
 /** Leasing office dashboard (/admin): what the AI agent did. Read-only, one company at a time. */
-export function AdminPage() {
+export function AdminPage({ onSignOut }: { onSignOut: () => void }) {
   const [adminKey, setAdminKey] = useState(COMPANIES[0].adminKey)
   const company = COMPANIES.find((c) => c.adminKey === adminKey) ?? COMPANIES[0]
 
@@ -73,6 +73,9 @@ export function AdminPage() {
           </label>
           <button type="button" className="button-primary" onClick={refresh} disabled={isLoading}>
             {isLoading ? 'Loading…' : 'Refresh'}
+          </button>
+          <button type="button" className="button-secondary" onClick={onSignOut}>
+            Sign out
           </button>
         </div>
       </header>

@@ -19,6 +19,13 @@ export const COMPANIES: Company[] = [
   },
 ]
 
+// Login for the /admin page. DEMO ONLY: it is checked in the browser, so anyone who reads
+// the site's JavaScript can find it. A real dashboard checks the password on the server.
+export const ADMIN_LOGIN = {
+  username: 'admin',
+  password: 'prasad',
+}
+
 export const SUGGESTIONS = [
   'Show me your properties',
   '2 BHK in Hinjewadi under ₹28,000',

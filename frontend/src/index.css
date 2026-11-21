@@ -750,3 +750,80 @@ button:focus-visible {
     font-size: 1.6rem;
   }
 }
+
+
+/* ---------- Admin sign-in ---------- */
+.button-secondary {
+  padding: 9px 18px;
+  border: 1px solid var(--ink);
+  border-radius: 999px;
+  background: #fff;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.button-secondary:hover {
+  background: var(--cream-light);
+}
+
+.login-main {
+  display: grid;
+  place-items: center;
+  padding: 56px 16px;
+}
+
+.login-card {
+  display: grid;
+  gap: 14px;
+  width: min(100%, 380px);
+  padding: 28px;
+  background: #fff;
+  border: 1.5px solid var(--ink);
+  border-radius: 18px;
+  box-shadow: 8px 8px 0 var(--ink);
+}
+
+.login-card .eyebrow,
+.login-card .error {
+  margin: 0;
+}
+
+.login-card h1 {
+  margin: 0 0 4px;
+  font-family: var(--font-display);
+  font-size: 1.7rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: var(--ink);
+}
+
+.field {
+  display: grid;
+  gap: 6px;
+  color: var(--ink);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.field input {
+  padding: 10px 14px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--cream-light);
+  color: var(--text);
+  font: inherit;
+  font-size: 0.95rem;
+  font-weight: 400;
+}
+
+.field input:focus {
+  outline: 2px solid var(--red);
+  outline-offset: 1px;
+}
+
+.login-back {
+  color: var(--burgundy);
+  font-size: 0.85rem;
+  text-align: center;
+}
