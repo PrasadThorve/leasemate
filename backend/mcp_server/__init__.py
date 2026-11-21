@@ -1,0 +1,1 @@
+"""LeaseMate MCP Server"""
