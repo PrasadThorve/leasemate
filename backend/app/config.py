@@ -34,6 +34,10 @@ class Settings(BaseSettings):
     # Each company embeds the chat widget with its own public widget key. The API maps
     # the key to a company, so the browser never sends a company id directly.
     widget_keys: dict[str, int] = {"sahyadri-demo-key": 1, "indrayani-demo-key": 2}
+    
+    # Keys for the leasing office dashboard (/admin). Unlike widget keys these are secret:
+    # only the company's staff should have them. Demo values; production would use staff login.
+    admin_keys: dict[str, int] = {"sahyadri-admin-demo": 1, "indrayani-admin-demo": 2}
 
     @field_validator("openai_reasoning_effort", "guard_model", mode="before")
     @classmethod

@@ -18,6 +18,14 @@ def get_company_id(x_widget_key: Annotated[str | None, Header()] = None) -> int:
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Missing or unknown X-Widget-Key header.")
     return company_id
 
+def get_admin_company_id(x_admin_key: Annotated[str | None, Header()] = None) -> int:
+    """Which company's leasing office is signed in, from the secret X-Admin-Key header.
+    The public widget key is NOT accepted here: anyone can read it from the website."""
+    company_id = settings.admin_keys.get(x_admin_key or "")
+    if company_id is None:
+        raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Missing or unknown X-Admin-Key header.")
+    return company_id
+
 
 def get_agent_service(request: Request) -> AgentService:
     """The single AgentService created when the app starts (see lifespan in main.py)."""

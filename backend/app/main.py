@@ -10,6 +10,7 @@ from app.agent.service import AgentService, ToolsUnavailableError
 from app.config import settings
 from app.dependencies import get_agent_service, get_company_id
 from app.schemas import THREAD_ID_PATTERN, ChatRequest, ChatResponse, HistoryMessage, HistoryResponse
+from app.admin import router as admin_router
 
 logger = logging.getLogger("leasemate")
 
@@ -31,8 +32,10 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.cors_origins,
     allow_methods=["GET", "POST"],
-    allow_headers=["Content-Type", "X-Widget-Key"],
+    allow_headers=["Content-Type", "X-Widget-Key", "X-Admin-Key"],
 )
+
+app.include_router(admin_router)
 
 
 CompanyId = Annotated[int, Depends(get_company_id)]

@@ -1,8 +1,3 @@
-"""The leasing team's view: conversations the AI handed over to a human.
-
-Run from the backend folder:
-    uv run python -m scripts.list_handoffs
-"""
 from sqlalchemy import select
 
 from db.database import SessionLocal

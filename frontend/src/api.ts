@@ -1,7 +1,7 @@
 // Every call to the backend goes through this file.
 
 import { API_URL } from './config'
-import type { ChatResponse, HistoryResponse } from './types'
+import type { ActivityResponse, ChatResponse, HistoryResponse } from './types'
 
 export class ApiError extends Error {
   status: number
@@ -13,12 +13,12 @@ export class ApiError extends Error {
   }
 }
 
-async function request<T>(path: string, widgetKey: string, init: RequestInit = {}): Promise<T> {
+async function request<T>(path: string, headers: Record<string, string>, init: RequestInit = {}): Promise<T> {
   let response: Response
   try {
     response = await fetch(`${API_URL}${path}`, {
       ...init,
-      headers: { 'Content-Type': 'application/json', 'X-Widget-Key': widgetKey },
+      headers: { 'Content-Type': 'application/json', ...headers },
     })
   } catch {
     // fetch only throws when it can't reach the server at all.
@@ -35,12 +35,17 @@ async function request<T>(path: string, widgetKey: string, init: RequestInit = {
 }
 
 export function sendMessage(widgetKey: string, message: string, threadId: string | null) {
-  return request<ChatResponse>('/chat', widgetKey, {
+  return request<ChatResponse>('/chat', { 'X-Widget-Key': widgetKey }, {
     method: 'POST',
     body: JSON.stringify({ message, thread_id: threadId }),
   })
 }
 
 export function fetchHistory(widgetKey: string, threadId: string) {
-  return request<HistoryResponse>(`/chat/${encodeURIComponent(threadId)}`, widgetKey)
+  return request<HistoryResponse>(`/chat/${encodeURIComponent(threadId)}`, { 'X-Widget-Key': widgetKey })
+}
+
+/** Leasing office dashboard: everything the agent did for one company. */
+export function fetchActivity(adminKey: string) {
+  return request<ActivityResponse>('/admin/activity', { 'X-Admin-Key': adminKey })
 }
