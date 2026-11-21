@@ -23,6 +23,13 @@ class Settings(BaseSettings):
 
     mcp_server_url: str = "http://127.0.0.1:8001/mcp"
     default_company_id: int = 1
+    
+    # Websites allowed to call the API from a browser (the React dev server).
+    cors_origins: list[str] = ["http://localhost:5173", "http://127.0.0.1:5173"]
+
+    # Each company embeds the chat widget with its own public widget key. The API maps
+    # the key to a company, so the browser never sends a company id directly.
+    widget_keys: dict[str, int] = {"sahyadri-demo-key": 1, "indrayani-demo-key": 2}
 
     @field_validator("openai_reasoning_effort", mode="before")
     @classmethod
